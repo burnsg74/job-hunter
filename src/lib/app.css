@@ -1,0 +1,168 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+main {
+    min-height: calc(100vh - 50px);
+    margin-top: 25px;
+    /*padding: 0 10px;*/
+}
+
+h5 {
+    margin: unset;
+    padding: 5px;
+    border-bottom: 1px solid #d0d0d0;
+}
+
+#calendar {
+    min-height: calc(100vh - 60px);
+}
+
+
+.notes_container {
+    display: flex;
+}
+
+.notes_left-column {
+    width: 20%;
+}
+
+.notes_right-column {
+    width: 80%;
+}
+
+.container {
+    display: flex;
+    max-width: unset;
+    padding: unset;
+    height: 100vh;
+}
+
+.left, .right {
+    overflow: auto;
+    height: 100vh;
+}
+
+.jobs-left-col {
+    padding: unset;
+    overflow: auto;
+    height: 100vh;
+}
+
+.jobs-right-col {
+    background-color: rgb(13 234 253 / 6%);
+    padding: 10px 0 0 10px;
+    overflow: auto;
+    height: 100vh;
+}
+
+.active-group {
+    /* Add your active group styles here */
+    font-weight: bold;
+    color: blue;
+}
+
+.status-nav:hover {
+    font-weight: bold;
+    color: blue;
+}
+
+.job-title {
+    padding: 5px;
+    cursor: pointer;
+    border-bottom: 1px solid #d0d0d0;
+}
+
+/*.job-title:hover {*/
+/*    background-color: #E7FEF3;*/
+/*}*/
+
+.active {
+    background-color: rgb(13 234 253 / 6%);
+    border-right: rgba(87, 86, 86, 0.18) 1px solid;
+}
+
+.status-not-saved {
+    font-weight: lighter;
+    font-style: italic;
+    color: #575656;
+}
+
+.status-not-saved-label {
+    font-weight: lighter;
+    font-style: italic;
+    padding-left: 30px;
+}
+
+.inactive {
+    border-right: #575656 1px solid;
+}
+
+.empty {
+    border-right: #575656 1px solid;
+    height: 100vh;
+}
+
+.small-icon {
+    font-size: 0.7em;
+    vertical-align: top;
+    float: right;
+    padding-right: 20px;
+}
+
+.status-links {
+    display: grid;
+    /* Create a grid with each column spanning equally */
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px; /* Adjust the space between items as needed */
+}
+
+.status-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0; /* Optional: background color */
+    padding: 10px;
+    border-radius: 5px; /* Optional: rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow */
+}
+
+
+/* Background colors for each status */
+.New {
+    background-color: #e7f3fe; /* Light blue */
+    border-right: #0d120a 1px solid;
+}
+
+.Saved {
+    background-color: #fef3e7; /* Light orange */
+    border-right: #0d120a 1px solid;
+}
+
+.Applied {
+    background-color: #e7fef3; /* Light green */
+    border-right: #0d120a 1px solid;
+}
+
+.Interview {
+    background-color: #f3e7fe; /* Light purple */
+    border-right: #0d120a 1px solid;
+}
+
+.Rejected {
+    background-color: #fee7e7; /* Light red */
+    border-right: #0d120a 1px solid;
+}
+
+.Deleted {
+    background-color: #f0f0f0; /* Light grey */
+    border-right: #0d120a 1px solid;
+}
+
+select {
+    border: unset;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.nav-link {
+    padding: 0;
+}
