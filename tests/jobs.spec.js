@@ -21,12 +21,11 @@ test('getjobs', async ({page}) => {
             }
         });
     });
-    console.log(Array.isArray(excitingJkList));
-    console.log(typeof excitingJkList, excitingJkList)
+    console.log('Job Count: ',excitingJkList.length);
 
     const jobTitles = [
-        'Senior Full Stack Engineer',
         'Senior Full Stack Developer',
+        'Senior Full Stack Engineer',
         'Senior PHP Engineer',
         'Senior PHP Developer',
         'Full Stack Developer',
@@ -34,6 +33,11 @@ test('getjobs', async ({page}) => {
 
     for (const jobTitle of jobTitles) {
         console.log ('Query for ',jobTitle)
+        page.on('console', msg => {
+            if (msg.type() === 'debug') {
+                console.log(msg.text());
+            }
+        });
 
         // fromage=3
         // https://www.indeed.com/jobs?q=php&l=remote&fromage=3&vjk=9dfbe3f6765dec12
@@ -46,34 +50,29 @@ test('getjobs', async ({page}) => {
         while (true) {
             await new Promise(resolve => setTimeout(resolve, 3000));
             const jobData = await page.evaluate(async (excitingJkList,jobTitle) => {
+                console.log('v Get Page Data v');
                 const jobcardsDiv = document.getElementById('mosaic-provider-jobcards');
                 const jobcardslinks = jobcardsDiv.querySelectorAll('a.jcs-JobTitle')
                 const jobs = [];
                 for (const aElement of Array.from(jobcardslinks)) {
                     const title = aElement.querySelector('span').innerText;
                     const jk = aElement.getAttribute('data-jk');
-                    console.log('jk',jk, typeof excitingJkList)
 
                     if (excitingJkList.includes(jk)) {
-                        console.log('Skipping', jk);
                         continue;
                     }
                     excitingJkList.push(jk);
+
                     const href = aElement.getAttribute('href');
                     aElement.click();
                     await new Promise(resolve => setTimeout(resolve, 3000));
 
                     const JobComponent = document.querySelector('.jobsearch-JobComponent');
-
-                    // Get Company Name and link
                     const companyElement = JobComponent.querySelector('div[data-testid="inlineHeader-companyName"] a');
                     const company = companyElement ? companyElement.childNodes[0].nodeValue.trim() : null;
                     const companyLink = companyElement && companyElement.getAttribute('href');
-
-                    // Get Salary
                     const salaryElement = JobComponent.querySelector('div[data-testid="jobsearch-CollapsedEmbeddedHeader-salary"] span');
                     const salary = salaryElement ? salaryElement.textContent : 'Pay information not provided';
-
                     const jobDescriptionElement = JobComponent.querySelector('#jobDescriptionText');
                     let postHTML = jobDescriptionElement ? jobDescriptionElement.outerHTML : '';
                     postHTML = postHTML.replace(/<img[^>]*>/g, '').replace(/<svg[^>]*>[\s\S]*?<\/svg>/g, '').replace(/<button[^>]*>[\s\S]*?<\/button>/g, '');
@@ -82,7 +81,9 @@ test('getjobs', async ({page}) => {
                 }
                 return jobs;
             }, excitingJkList);
+            console.log('^ Got page Data: excitingJkList Count: ',excitingJkList.length);
 
+            console.log('Add Jobs to DB')
             for (const job of jobData) {
                 const {jk, postHTML, href, title, company, companyLink, salary} = job;
                 const lastID = await new Promise((resolve, reject) => {
@@ -91,7 +92,8 @@ test('getjobs', async ({page}) => {
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, DATE ( CURRENT_TIMESTAMP),
                                     ?)`, [jk, 'New', postHTML, '', 'https://www.indeed.com' + href, title, company, companyLink, salary, jobTitle], function (err) {
                         if (err) {
-                            reject(err);
+                            console.log('Insert error:', jk);
+                            resolve(null);
                         } else {
                             resolve(this.lastID);
                         }
