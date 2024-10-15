@@ -21,6 +21,8 @@ test('getjobs', async ({page}) => {
             }
         });
     });
+    console.log(Array.isArray(excitingJkList));
+    console.log(typeof excitingJkList, excitingJkList)
 
     const jobTitles = [
         'Senior Full Stack Engineer',
@@ -31,29 +33,26 @@ test('getjobs', async ({page}) => {
     ];
 
     for (const jobTitle of jobTitles) {
+        console.log ('Query for ',jobTitle)
 
         // fromage=3
         // https://www.indeed.com/jobs?q=php&l=remote&fromage=3&vjk=9dfbe3f6765dec12
         await page.goto('https://www.indeed.com/');
-        await page.getByPlaceholder('Job title, keywords, or').fill('Full Stack Developer');
+        await page.getByPlaceholder('Job title, keywords, or').fill(jobTitle);
         await page.getByPlaceholder('City, state, zip code, or "').fill('Remote');
         await page.getByRole('button', {name: 'Search'}).click();
         await page.waitForLoadState('networkidle');
-        await new Promise(resolve => setTimeout(resolve, 3000));
 
-        // await page.getByLabel('Clear Last 24 hours filter').click();
-        // await page.click('a#filter-dateposted');
-        // await page.getByRole('link', {name: 'Last 14 days'}).click();
-        // await page.getByRole('link', { name: 'Last 3 days' }).click();
-        // await page.getByRole('link', { name: 'Last 7 days' }).click();
         while (true) {
-            const jobData = await page.evaluate(async (excitingJkList) => {
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            const jobData = await page.evaluate(async (excitingJkList,jobTitle) => {
                 const jobcardsDiv = document.getElementById('mosaic-provider-jobcards');
                 const jobcardslinks = jobcardsDiv.querySelectorAll('a.jcs-JobTitle')
                 const jobs = [];
                 for (const aElement of Array.from(jobcardslinks)) {
                     const title = aElement.querySelector('span').innerText;
                     const jk = aElement.getAttribute('data-jk');
+                    console.log('jk',jk, typeof excitingJkList)
 
                     if (excitingJkList.includes(jk)) {
                         console.log('Skipping', jk);
@@ -90,7 +89,7 @@ test('getjobs', async ({page}) => {
                     db.run(`INSERT INTO jobs (jk, status, post_html, notes, link, title, company, company_link, salary,
                                               new_date, search_query)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, DATE ( CURRENT_TIMESTAMP),
-                                    ?)`, [jk, 'New', postHTML, '', 'https://www.indeed.com' + href, title, company, companyLink, salary, 'Full Stack Developer'], function (err) {
+                                    ?)`, [jk, 'New', postHTML, '', 'https://www.indeed.com' + href, title, company, companyLink, salary, jobTitle], function (err) {
                         if (err) {
                             reject(err);
                         } else {
@@ -103,9 +102,11 @@ test('getjobs', async ({page}) => {
 
             const nextPageLink = await page.$('a[data-testid="pagination-page-next"]');
             if (nextPageLink) {
+                console.log('Next Page')
                 await nextPageLink.click();
                 await page.waitForLoadState('networkidle');
             } else {
+                console.log('STOP')
                 break;
             }
         }

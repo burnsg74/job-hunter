@@ -1,9 +1,26 @@
 <script>
     import {onMount} from "svelte";
+    import Editor from '@tinymce/tinymce-svelte';
+
+    let conf = {
+        height: 500,
+        menubar: false,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'preview', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | ' +
+            'bold italic forecolor | alignleft aligncenter ' +
+            'alignright alignjustify | bullist numlist outdent indent | ' +
+            'removeformat | help',
+    }
 
     let jobs = [];
     let status = 'New';
     let currentJob = null;
+    let editing = false;
+    let autoSaveTimeout;
     const statuses = ['New', 'Saved', 'Applied', 'Interview', 'Rejected', 'Deleted'];
     let currentJobStatusHasChanged = false;
 
@@ -59,7 +76,45 @@
         }
     }
 
+    async function autoSave() {
+        if (!editing) return;
+        // Update the current job's HTML content
+        // currentJob.post_html = value;
+
+        try {
+            await fetch('/api/jobs', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(currentJob),
+            });
+            console.log('Auto-saved successfully');
+        } catch (error) {
+            console.error('Error auto-saving:', error);
+        }
+    }
+
+    function startAutoSaveTimer() {
+        clearTimeout(autoSaveTimeout);
+        autoSaveTimeout = setTimeout(autoSave, 3000);
+    }
+
+    function save() {
+        autoSave().then(() => {
+            editing = false;
+        });
+    }
+
     function handleKeyDown(event) {
+        event.preventDefault();
+        console.log('Key pressed:', event.key);
+
+        if (event.key === 'e') {
+            console.log('Editing...');
+            editing = true;
+        }
+
         // console.log(`Key pressed: ${event.key}, Code: ${event.code}`);
         if (event.key === 'j' || event.key === 'ArrowDown') {
             let index = jobs.findIndex(j => j.jk === currentJob.jk);
@@ -140,6 +195,7 @@
 
     onMount(() => {
         fetchJobs();
+        startAutoSaveTimer
         document.addEventListener('keydown', handleKeyDown);
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
@@ -147,16 +203,24 @@
     });
 </script>
 <div class="container-fluid">
-    <div class="row border-bottom">
-        {#each statuses as statusGroup}
-            <div class="col-2 status-nav {statusGroup} {statusGroup === status ? 'active-group' : ''}"
-                 on:click={() => updateStatus(statusGroup)}>
-                {statusGroup} ({jobs.filter(job => job.status === statusGroup).length})
-            </div>
-        {/each}
-    </div>
+    <!--        <div class="row border-bottom">-->
+    <!--            {#each statuses as statusGroup}-->
+    <!--                <div class="col-2 status-nav {statusGroup} {statusGroup === status ? 'active-group' : ''}"-->
+    <!--                     on:click={() => updateStatus(statusGroup)}>-->
+    <!--                    {statusGroup} ({jobs.filter(job => job.status === statusGroup).length})-->
+    <!--                </div>-->
+    <!--            {/each}-->
+    <!--        </div>-->
     <div class="row">
         <div class="col-2 jobs-left-col">
+            <nav class="row navbar bg-body-tertiary">
+                <a href="/" class="col-6 nav-link jobs-link">
+                    <button class="active nav-btn btn btn-sm btn-outline-success" type="button">Jobs</button>
+                </a>
+                <a href="/notes" class="col-6 nav-link">
+                    <button class="nav-btn btn btn-sm btn-outline-secondary" type="button">Notes</button>
+                </a>
+            </nav>
             {#each jobs.filter(job => job.status === status) as job}
                 <div class="job-title {job.jk === currentJob?.jk ? 'active' : 'inactive'}"
                      on:click={() => currentJob = job}>
@@ -168,6 +232,14 @@
             {/if}
         </div>
         <div class="col-10 jobs-right-col">
+            <div class="row border-bottom">
+                {#each statuses as statusGroup}
+                    <div class="col-2 status-nav {statusGroup} {statusGroup === status ? 'active-group' : ''}"
+                         on:click={() => updateStatus(statusGroup)}>
+                        {statusGroup} ({jobs.filter(job => job.status === statusGroup).length})
+                    </div>
+                {/each}
+            </div>
             {#if currentJob}
                 <h1>{currentJob.title} &nbsp; <a href="{currentJob.link}" target="_blank"> <i
                         class="bi bi-arrow-up-right-square small-icon"></i></a></h1>
@@ -193,20 +265,47 @@
                         <td>
                             <select bind:value={currentJob.status}
                                     class:status-not-saved={currentJobStatusHasChanged}>
-                                    on:change={handleStatusChange}>
+                                on:change={handleStatusChange}>
                                 {#each statuses as status}
                                     <option value={status}>{status}</option>
                                 {/each}
                             </select>
                             {#if currentJobStatusHasChanged}
-                                <label class:status-not-saved-label={currentJobStatusHasChanged}>(Press Enter to save, Escape to cancel)</label>
+                                <label class:status-not-saved-label={currentJobStatusHasChanged}>(Press Enter to save,
+                                    Escape to cancel)</label>
                             {/if}
                         </td>
                     </tr>
                 </table>
                 <hr>
-                {@html currentJob.post_html}
+                {#if editing}
+                    <button class="save-button" on:click={save}>Save</button>
+                    <Editor
+                            licenseKey='gpl'
+                            scriptSrc='tinymce/tinymce.min.js'
+                            bind:value={currentJob.post_html}
+                            {conf}
+                    />
+                {:else}
+                    {@html currentJob.post_html}
+                {/if}
             {/if}
         </div>
     </div>
 </div>
+
+<style>
+    .save-button {
+        padding: 0 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px 5px 0 0;
+        cursor: pointer;
+        margin-left: 15px;
+    }
+
+    .save-button:hover {
+        background-color: #0056b3;
+    }
+</style>

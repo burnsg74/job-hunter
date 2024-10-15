@@ -3,7 +3,7 @@
 
 main {
     min-height: calc(100vh - 50px);
-    margin-top: 25px;
+    /*margin-top: 25px;*/
     /*padding: 0 10px;*/
 }
 
@@ -50,7 +50,7 @@ h5 {
 
 .jobs-right-col {
     background-color: rgb(13 234 253 / 6%);
-    padding: 10px 0 0 10px;
+    padding: 0 0 0 10px;
     overflow: auto;
     height: 100vh;
 }
@@ -79,6 +79,49 @@ h5 {
 .active {
     background-color: rgb(13 234 253 / 6%);
     border-right: rgba(87, 86, 86, 0.18) 1px solid;
+}
+
+.jobs-link {
+    border-right: black 1px solid;
+    text-align: center;
+}
+
+.notes-link {
+    padding-left: 20px;
+    background-color: #f6f2c1;
+    border-right: black 1px solid;
+    margin-right: 2px;
+    text-align: center;
+}
+
+.btn-group-justified > .btn {
+    flex: 1;
+    border-right: 1px solid #ccc; /* Add a border between buttons */
+}
+.btn-group-justified > .btn:last-child {
+    border-right: none; /* Remove the border from the last button */
+}
+
+.navbar {
+    background-color: #f0f0f0;
+    flex: 1;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    margin: 0;
+}
+
+.nav-link {
+    padding: 0;
+    text-align: center;
+}
+
+.nav-btn {
+    width: 90%;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center;
 }
 
 .status-not-saved {
@@ -130,6 +173,7 @@ h5 {
 /* Background colors for each status */
 .New {
     background-color: #e7f3fe; /* Light blue */
+    border-left: #0d120a 1px solid;
     border-right: #0d120a 1px solid;
 }
 
@@ -166,3 +210,23 @@ select {
 .nav-link {
     padding: 0;
 }
+
+.notes-left-col {
+    padding: 0  ;
+    border-right: #575656 1px solid;
+}
+
+.notes-right-col {
+    background-color: #F2FEFF
+}
+
+.new-note-link {
+    border: none;
+    border-bottom: 1px solid #ccc;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    padding: 0;
+}
+
