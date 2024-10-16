@@ -1,14 +1,9 @@
 import {json} from '@sveltejs/kit';
 import sqlite3 from 'sqlite3';
 
-sqlite3.verbose();
-console.log(import.meta.env.VITE_APP_DB_FILE_NAME, import.meta.env);
-const dbFileName = import.meta.env.VITE_APP_DB_FILE_NAME || 'db-prod.sqlite3';
-console.log(dbFileName);
-
 export async function GET() {
     sqlite3.verbose();
-    const db = new sqlite3.Database(dbFileName, (err) => {
+    const db = new sqlite3.Database('db.sqlite3', (err) => {
         if (err) {
             throw err;
         }
@@ -42,7 +37,7 @@ export async function PUT({request}) {
     console.log('Update Note', note);
 
     sqlite3.verbose();
-    const db = new sqlite3.Database(dbFileName, (err) => {
+    const db = new sqlite3.Database('db.sqlite3', (err) => {
         if (err) {
             throw err;
         }
@@ -96,7 +91,7 @@ export async function POST({ request }) {
     const note = await request.json();
     console.log('Create Note', note);
     sqlite3.verbose();
-    const db = new sqlite3.Database(dbFileName, (err) => {
+    const db = new sqlite3.Database('db.sqlite3', (err) => {
         if (err) {
             throw err;
         }
