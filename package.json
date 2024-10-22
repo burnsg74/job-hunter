@@ -1,5 +1,5 @@
 {
-	"name": "job-hunter",
+	"name": "jobs",
 	"version": "0.0.1",
 	"private": true,
 	"type": "module",
@@ -21,10 +21,21 @@
 		"@types/node": "^22.7.5",
 		"bootstrap": "^5.3.3",
 		"bootstrap-icons": "^1.11.3",
-		"sqlite3": "^5.1.7",
 		"svelte": "^4.2.19",
 		"tinymce": "^7.4.1",
 		"vite": "^5.4.9",
 		"vite-plugin-static-copy": "^2.0.0"
+	},
+	"dependencies": {
+		"@fullcalendar/bootstrap5": "^6.1.15",
+		"@fullcalendar/core": "^6.1.15",
+		"@fullcalendar/daygrid": "^6.1.15",
+		"@fullcalendar/interaction": "^6.1.15",
+		"@fullcalendar/list": "^6.1.15",
+		"@fullcalendar/multimonth": "^6.1.15",
+		"@fullcalendar/timegrid": "^6.1.15",
+		"bootstrap": "^5.3.3",
+		"bootstrap-icons": "^1.11.3",
+		"sqlite3": "^5.1.7"
 	}
 }

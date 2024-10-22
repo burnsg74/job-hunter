@@ -256,10 +256,10 @@
                             </strong>
                         </td>
                     </tr>
-                    <tr>
-                        <td>Salary:</td>
-                        <td><strong>{currentJob.salary}</strong></td>
-                    </tr>
+<!--                    <tr>-->
+<!--                        <td>Salary:</td>-->
+<!--                        <td><strong>{currentJob.salary}</strong></td>-->
+<!--                    </tr>-->
                     <tr>
                         <td>Status:</td>
                         <td>

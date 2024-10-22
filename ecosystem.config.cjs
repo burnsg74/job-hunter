@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "jobhunter",
+      name: "jobs",
       script: "build/index.js",
       instances: 1,
       watch: false,

@@ -4,7 +4,7 @@ sqlite3.verbose();
 
 test('getjobs', async ({page}) => {
     test.setTimeout(0);
-    const dbFileName = '/Users/greg/Code/local/job-hunter/db-dev.sqlite3'
+    const dbFileName = '/Users/greg/Code/local/jobs/db.sqlite3'
     const db = new sqlite3.Database(dbFileName, (err) => {
         if (err) {
             throw err;
@@ -21,7 +21,6 @@ test('getjobs', async ({page}) => {
             }
         });
     });
-    console.log('Job Count: ',excitingJkList.length);
 
     const jobTitles = [
         'Senior Full Stack Developer',
@@ -39,12 +38,7 @@ test('getjobs', async ({page}) => {
             }
         });
 
-        // fromage=3
-        // https://www.indeed.com/jobs?q=php&l=remote&fromage=3&vjk=9dfbe3f6765dec12
-        await page.goto('https://www.indeed.com/');
-        await page.getByPlaceholder('Job title, keywords, or').fill(jobTitle);
-        await page.getByPlaceholder('City, state, zip code, or "').fill('Remote');
-        await page.getByRole('button', {name: 'Search'}).click();
+        await page.goto("https://www.indeed.com/jobs?q=" + jobTitle.replace(' ', '+') + "&l=Remote&fromage=3");
         await page.waitForLoadState('networkidle');
 
         while (true) {
@@ -57,6 +51,7 @@ test('getjobs', async ({page}) => {
                 for (const aElement of Array.from(jobcardslinks)) {
                     const title = aElement.querySelector('span').innerText;
                     const jk = aElement.getAttribute('data-jk');
+                    console.log('Job: ', jk);
 
                     if (excitingJkList.includes(jk)) {
                         continue;
@@ -71,7 +66,7 @@ test('getjobs', async ({page}) => {
                     const companyElement = JobComponent.querySelector('div[data-testid="inlineHeader-companyName"] a');
                     const company = companyElement ? companyElement.childNodes[0].nodeValue.trim() : null;
                     const companyLink = companyElement && companyElement.getAttribute('href');
-                    const salaryElement = JobComponent.querySelector('div[data-testid="jobsearch-CollapsedEmbeddedHeader-salary"] span');
+                    const salaryElement = JobComponent.querySelector("#salaryInfoAndJobType > span");
                     const salary = salaryElement ? salaryElement.textContent : 'Pay information not provided';
                     const jobDescriptionElement = JobComponent.querySelector('#jobDescriptionText');
                     let postHTML = jobDescriptionElement ? jobDescriptionElement.outerHTML : '';
@@ -81,11 +76,11 @@ test('getjobs', async ({page}) => {
                 }
                 return jobs;
             }, excitingJkList);
-            console.log('^ Got page Data: excitingJkList Count: ',excitingJkList.length);
+            console.log('^ Got page Data');
 
-            console.log('Add Jobs to DB')
             for (const job of jobData) {
                 const {jk, postHTML, href, title, company, companyLink, salary} = job;
+                console.log('Add Job to DB:', jk, title);
                 const lastID = await new Promise((resolve, reject) => {
                     db.run(`INSERT INTO jobs (jk, status, post_html, notes, link, title, company, company_link, salary,
                                               new_date, search_query)
