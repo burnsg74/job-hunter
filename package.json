@@ -4,13 +4,15 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev --open",
+		"dev": "concurrently \"node ws-server.js\" \"vite dev --open\"",
 		"build": "vite build",
+		"start": "node ws-server.js",
 		"run:all": "pnpm exec playwright test",
 		"run:chrome": "pnpm exec playwright test --project=chromium",
 		"run:head": "pnpm exec playwright test --project=chromium --headed",
 		"run:ui": "pnpm exec playwright test --ui",
-		"run:codegen": "npx playwright codegen https://www.indeed.com"
+		"run:codegen": "npx playwright codegen https://www.indeed.com",
+		"pm2:prod": "pm2 start ecosystem.config.js --env production"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.48.0",
@@ -21,6 +23,7 @@
 		"@types/node": "^22.7.5",
 		"bootstrap": "^5.3.3",
 		"bootstrap-icons": "^1.11.3",
+		"concurrently": "^9.0.1",
 		"svelte": "^4.2.19",
 		"tinymce": "^7.4.1",
 		"vite": "^5.4.9",
@@ -34,8 +37,14 @@
 		"@fullcalendar/list": "^6.1.15",
 		"@fullcalendar/multimonth": "^6.1.15",
 		"@fullcalendar/timegrid": "^6.1.15",
+		"@types/express": "^5.0.0",
 		"bootstrap": "^5.3.3",
 		"bootstrap-icons": "^1.11.3",
+		"cors": "^2.8.5",
+		"dotenv": "^16.4.5",
+		"express": "^4.21.1",
+		"socket.io": "^4.8.0",
+		"socket.io-client": "^4.8.0",
 		"sqlite3": "^5.1.7"
 	}
 }

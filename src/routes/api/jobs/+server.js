@@ -1,18 +1,20 @@
 import {json} from '@sveltejs/kit';
 import sqlite3 from 'sqlite3';
+import { PUBLIC_DB_FILENAME } from '$env/static/public';
 
 sqlite3.verbose();
+
 export async function GET() {
-    console.log('Get Jobs');
     sqlite3.verbose();
-    const db = new sqlite3.Database('db.sqlite3', (err) => {
+    const db = new sqlite3.Database(PUBLIC_DB_FILENAME, (err) => {
         if (err) {
             throw err;
         }
     });
-    console.log('Connected to the database.',db);
+    console.log('Connected to the database.', db);
 
-    const selectSQL = `SELECT * FROM jobs`;
+    const selectSQL = `SELECT *
+                       FROM jobs`;
     let jobs = [];
     try {
         jobs = await new Promise((resolve, reject) => {
@@ -37,10 +39,10 @@ export async function GET() {
 
 export async function PUT({request}) {
     const job = await request.json();
-    console.log('Update Job',job);
+    console.log('Update Job', job);
 
     sqlite3.verbose();
-    const db = new sqlite3.Database('db.sqlite3', (err) => {
+    const db = new sqlite3.Database(PUBLIC_DB_FILENAME, (err) => {
         if (err) {
             throw err;
         }
@@ -48,11 +50,10 @@ export async function PUT({request}) {
 
     const columns = Object.keys(job);
     const placeholders = columns.map(col => `${col} = ?`).join(', ');
-    const updateSQL = `UPDATE jobs SET ${placeholders} WHERE jk = ?`;
+    const updateSQL = `UPDATE jobs
+                       SET ${placeholders}
+                       WHERE jk = ?`;
     const updateValues = [...columns.map(col => job[col]), job.jk];
-
-    console.log(updateSQL); // For debugging
-    console.log(updateValues);
 
     try {
         await new Promise((resolve, reject) => {

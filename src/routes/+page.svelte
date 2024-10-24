@@ -1,6 +1,12 @@
 <script>
     import {onMount} from "svelte";
     import Editor from '@tinymce/tinymce-svelte';
+    import { io } from 'socket.io-client'
+    import { PUBLIC_WS_PORT } from '$env/static/public';
+
+
+    let socket;
+    let serverResponse = [];
 
     let conf = {
         height: 500,
@@ -27,6 +33,10 @@
     $: {
         const params = new URLSearchParams(window.location.search);
         status = params.get('status') ?? 'New';
+    }
+
+    function pullJobs() {
+        socket.emit('messageFromClient', 'pull jobs');
     }
 
     async function fetchJobs() {
@@ -197,6 +207,18 @@
         fetchJobs();
         startAutoSaveTimer
         document.addEventListener('keydown', handleKeyDown);
+
+        socket = io(`http://localhost:${PUBLIC_WS_PORT}`, {
+            withCredentials: true
+        });
+
+        // Listen for the 'messageFromServer' event and update the UI
+        socket.on('messageFromServer', (data) => {
+            console.log('messageFromServer', data);
+            serverResponse = [...serverResponse, data];
+        });
+
+
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         }
@@ -213,20 +235,18 @@
     <!--        </div>-->
     <div class="row">
         <div class="col-2 jobs-left-col">
-            <nav class="row navbar bg-body-tertiary">
-                <a href="/" class="col-6 nav-link jobs-link">
-                    <button class="active nav-btn btn btn-sm btn-outline-success" type="button">Jobs</button>
-                </a>
-                <a href="/notes" class="col-6 nav-link">
-                    <button class="nav-btn btn btn-sm btn-outline-secondary" type="button">Notes</button>
-                </a>
-            </nav>
+            <ul>
+                {#each serverResponse as item}
+                    <li>{item}</li>
+                {/each}
+            </ul>
             {#each jobs.filter(job => job.status === status) as job}
                 <div class="job-title {job.jk === currentJob?.jk ? 'active' : 'inactive'}"
                      on:click={() => currentJob = job}>
                     {job.title}
                 </div>
             {/each}
+<!--            <button on:click={pullJobs}>Pull jobs</button>-->
             {#if jobs.filter(job => job.status === status).length === 0}
                 <p class="empty">No {status.toLowerCase()} job listings found.</p>
             {/if}
