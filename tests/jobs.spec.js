@@ -1,10 +1,18 @@
 import { test, expect } from '@playwright/test';
 import sqlite3 from 'sqlite3';
 import { io } from 'socket.io-client'
+
 sqlite3.verbose();
 
 test('getjobs', async ({ page }) => {
     test.setTimeout(0);
+    await page.setExtraHTTPHeaders({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9'
+    });
+    await page.setExtraHTTPHeaders({
+        'Accept-Language': 'en-US,en;q=0.9'
+    });
 
     const socket = io(`http://localhost:3012`, {
         withCredentials: true
@@ -35,6 +43,8 @@ test('getjobs', async ({ page }) => {
         'Senior PHP Engineer',
         'Senior PHP Developer',
         'Full Stack Developer',
+        'Full Stack Engineer',
+        'Laravel',
     ];
 
     for (const jobTitle of jobTitles) {
@@ -49,6 +59,11 @@ test('getjobs', async ({ page }) => {
 
         socket.emit('pullJobsLog', `Goto Indeed and load first page of jobs...`);
         await page.goto("https://www.indeed.com/jobs?q=" + jobTitle.replace(' ', '+') + "&l=Remote&fromage=3");
+        await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 4000 + 1000)));
+        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+        await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 4000 + 1000)));
+
+        page.pause()
         await page.waitForLoadState('networkidle');
 
         let pageNumber = 0;

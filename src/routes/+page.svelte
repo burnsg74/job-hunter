@@ -1,8 +1,8 @@
 <script>
     import {onMount} from "svelte";
     import Editor from '@tinymce/tinymce-svelte';
-    import { io } from 'socket.io-client'
-    import { PUBLIC_WS_PORT } from '$env/static/public';
+    import {io} from 'socket.io-client'
+    import {PUBLIC_WS_PORT} from '$env/static/public';
 
 
     let socket;
@@ -223,6 +223,43 @@
             window.removeEventListener('keydown', handleKeyDown);
         }
     });
+
+    function escapeRegExp(string) {
+        // return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return string.replace(/[.*+?^${}()|[\]#\\]/g, '\\$&');
+    }
+
+    function highlightWords(text) {
+        if (!text) return "";
+        const wordsToHighlightGreen = [
+            'HTML', 'JavaScript', 'CSS', 'NoSQL', 'SQL', 'React', 'Vue', 'Node.js',
+            'Node', 'Python', 'PHP', 'Git', 'AWS',
+            'TypeScript', 'Svelte', 'Flutter', 'Django',
+            'Laravel', 'jQuery'
+        ].map(escapeRegExp);
+
+        const wordsToHighlightRed = [
+            'Ruby','Azure',
+            '.Net', 'Java', 'C#', 'C++', 'Swift',
+            'Kotlin', 'Angular', 'Flutter',
+            'Spring','MSSQL'
+        ].map(escapeRegExp);
+
+        const regex = new RegExp(`\\b(${wordsToHighlightGreen.join('|')})\\b|\\b(${wordsToHighlightRed.join('|')})\\b`, 'g');
+
+        return text.replace(regex, (match, p1, p2) => {
+            if (p1) {
+                return `<span class="highlight-green">${match}</span>`;
+            } else if (p2) {
+                return `<span class="highlight-red">${match}</span>`;
+            }
+            return match;
+        });
+
+    }
+
+    $: highlightedHtml = highlightWords(currentJob?.post_html);
+
 </script>
 <div class="container-fluid">
     <!--        <div class="row border-bottom">-->
@@ -246,7 +283,7 @@
                     {job.title}
                 </div>
             {/each}
-<!--            <button on:click={pullJobs}>Pull jobs</button>-->
+            <!--            <button on:click={pullJobs}>Pull jobs</button>-->
             {#if jobs.filter(job => job.status === status).length === 0}
                 <p class="empty">No {status.toLowerCase()} job listings found.</p>
             {/if}
@@ -276,10 +313,10 @@
                             </strong>
                         </td>
                     </tr>
-<!--                    <tr>-->
-<!--                        <td>Salary:</td>-->
-<!--                        <td><strong>{currentJob.salary}</strong></td>-->
-<!--                    </tr>-->
+                    <tr>
+                        <td>Salary:</td>
+                        <td><strong>{currentJob.salary}</strong></td>
+                    </tr>
                     <tr>
                         <td>Status:</td>
                         <td>
@@ -307,7 +344,8 @@
                             {conf}
                     />
                 {:else}
-                    {@html currentJob.post_html}
+                    <!--{@html currentJob.post_html}-->
+                    {@html highlightedHtml}
                 {/if}
             {/if}
         </div>
@@ -327,5 +365,9 @@
 
     .save-button:hover {
         background-color: #0056b3;
+    }
+
+    .highlight {
+        background-color: yellow;
     }
 </style>

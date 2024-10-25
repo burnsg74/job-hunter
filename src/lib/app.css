@@ -230,3 +230,10 @@ select {
     padding: 0;
 }
 
+.highlight-green {
+    background-color: #84ff00;
+}
+
+.highlight-red {
+    background-color: #fd7676;
+}
