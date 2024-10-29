@@ -51,12 +51,11 @@ test('getjobs', async ({ page }) => {
 
         socket.emit('pullJobsLog', `Goto Indeed and load first page of jobs...`);
         await page.goto("https://www.indeed.com/jobs?q=" + jobTitle.replace(' ', '+') + "&l=Remote&fromage=3");
-        await page.pause()
+        // await page.pause()
         await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 6000 + 1000)));
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
         await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 4000 + 1000)));
 
-        page.pause()
         await page.waitForLoadState('networkidle');
 
         let pageNumber = 0;

@@ -117,7 +117,6 @@
     }
 
     function handleKeyDown(event) {
-        event.preventDefault();
         console.log('Key pressed:', event.key);
 
         if (event.key === 'e') {
@@ -127,6 +126,7 @@
 
         // console.log(`Key pressed: ${event.key}, Code: ${event.code}`);
         if (event.key === 'j' || event.key === 'ArrowDown') {
+            event.preventDefault();
             let index = jobs.findIndex(j => j.jk === currentJob.jk);
             if (index !== -1) {
                 for (let i = index + 1; i < jobs.length; i++) {
@@ -138,6 +138,7 @@
             }
         }
         if (event.key === 'k' || event.key === 'ArrowUp') {
+            event.preventDefault();
             let index = jobs.findIndex(j => j.jk === currentJob.jk);
             if (index !== -1) {
                 for (let i = index - 1; i >= 0; i--) {
@@ -150,6 +151,7 @@
         }
 
         if (event.key === 'l' || event.key === 'ArrowLeft') {
+            event.preventDefault();
             currentJobStatusHasChanged = true;
             let currentIndex = statuses.indexOf(currentJob.status);
             let nextIndex = currentIndex + 1;
@@ -158,6 +160,7 @@
         }
 
         if (event.key === 'h' || event.key === 'ArrowRight') {
+            event.preventDefault();
             currentJobStatusHasChanged = true;
             let currentIndex = statuses.indexOf(currentJob.status);
             let nextIndex = currentIndex - 1;
@@ -188,11 +191,13 @@
         }
 
         if (event.key === 'Enter') {
+            event.preventDefault();
             saveStatus(currentJob.status);
             currentJobStatusHasChanged = false;
         }
 
         if (event.key === 'Escape') {
+            event.preventDefault();
             currentJob.status = status;
             currentJobStatusHasChanged = false;
         }
