@@ -1,5 +1,5 @@
-@import 'bootstrap/dist/css/bootstrap.min.css';
-@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
 
 main {
     min-height: calc(100vh - 50px);
@@ -16,7 +16,6 @@ h5 {
 #calendar {
     min-height: calc(100vh - 60px);
 }
-
 
 .notes_container {
     display: flex;
@@ -37,7 +36,8 @@ h5 {
     height: 100vh;
 }
 
-.left, .right {
+.left,
+.right {
     overflow: auto;
     height: 100vh;
 }
@@ -70,6 +70,9 @@ h5 {
     padding: 5px;
     cursor: pointer;
     border-bottom: 1px solid #d0d0d0;
+    white-space: nowrap; /* Prevents text wrapping */
+    overflow: hidden; /* Hides overflow content */
+    text-overflow: ellipsis; /* Adds ellipsis for overflow content */
 }
 
 /*.job-title:hover {*/
@@ -169,7 +172,6 @@ h5 {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow */
 }
 
-
 /* Background colors for each status */
 .New {
     background-color: #e7f3fe; /* Light blue */
@@ -212,12 +214,12 @@ select {
 }
 
 .notes-left-col {
-    padding: 0  ;
+    padding: 0;
     border-right: #575656 1px solid;
 }
 
 .notes-right-col {
-    background-color: #F2FEFF
+    background-color: #f2feff;
 }
 
 .new-note-link {

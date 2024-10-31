@@ -337,7 +337,7 @@
     <!--            {/each}-->
     <!--        </div>-->
     <div class="row">
-        <div class="col-2 jobs-left-col">
+        <div class="col-3 jobs-left-col">
             <!-- <ul>
                 {#each serverResponse as item}
                     <li>{item}</li>
@@ -370,7 +370,7 @@
                 </p>
             {/if}
         </div>
-        <div class="col-10 jobs-right-col">
+        <div class="col-9 jobs-right-col">
             <div class="row border-bottom">
                 {#each statuses as statusGroup}
                     <div
