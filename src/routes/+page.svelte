@@ -343,9 +343,7 @@
                     <li>{item}</li>
                 {/each}
             </ul> -->
-            {#each jobs
-                .filter((job) => job.status === status)
-                .sort((a, b) => (a.company || "").localeCompare(b.company || "") || (a.title || "").localeCompare(b.title || "")) as job}
+            {#each jobs.filter((job) => job.status === status) as job}
                 <div
                     role="button"
                     tabindex="0"
@@ -449,6 +447,7 @@
                     <Editor
                         licenseKey="gpl"
                         scriptSrc="tinymce/tinymce.min.js"
+                        height="100%"
                         bind:value={currentJob.post_html}
                         {conf}
                     />
