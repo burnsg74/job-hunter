@@ -1,11 +1,11 @@
 <script>
     import { onMount } from "svelte";
     import Editor from "@tinymce/tinymce-svelte";
-    import { io } from "socket.io-client";
-    import { PUBLIC_WS_PORT } from "$env/static/public";
+    // import { io } from "socket.io-client";
+    // import { PUBLIC_WS_PORT } from "$env/static/public";
 
-    let socket;
-    let serverResponse = [];
+    // let socket;
+    // let serverResponse = [];
 
     let conf = {
         height: 500,
@@ -56,9 +56,9 @@
         status = params.get("status") ?? "New";
     }
 
-    function pullJobs() {
-        socket.emit("messageFromClient", "pull jobs");
-    }
+    // function pullJobs() {
+    //     socket.emit("messageFromClient", "pull jobs");
+    // }
 
     async function fetchJobs() {
         console.log("Fetching jobs...", status);
@@ -250,15 +250,15 @@
         startAutoSaveTimer;
         document.addEventListener("keydown", handleKeyDown);
 
-        socket = io(`http://localhost:${PUBLIC_WS_PORT}`, {
-            withCredentials: true,
-        });
+        // socket = io(`http://localhost:${PUBLIC_WS_PORT}`, {
+        //     withCredentials: true,
+        // });
 
-        // Listen for the 'messageFromServer' event and update the UI
-        socket.on("messageFromServer", (data) => {
-            console.log("messageFromServer", data);
-            serverResponse = [...serverResponse, data];
-        });
+        // // Listen for the 'messageFromServer' event and update the UI
+        // socket.on("messageFromServer", (data) => {
+        //     console.log("messageFromServer", data);
+        //     serverResponse = [...serverResponse, data];
+        // });
 
         return () => {
             window.removeEventListener("keydown", handleKeyDown);

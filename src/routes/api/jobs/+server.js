@@ -1,12 +1,12 @@
 import { json } from "@sveltejs/kit";
 import sqlite3 from "sqlite3";
-import { PUBLIC_DB_FILENAME } from "$env/static/public";
+// import { PUBLIC_DB_FILENAME } from "$env/static/public";
 
 sqlite3.verbose();
 
 export async function GET() {
   sqlite3.verbose();
-  const db = new sqlite3.Database(PUBLIC_DB_FILENAME, (err) => {
+  const db = new sqlite3.Database("db-prod.sqlite3", (err) => {
     if (err) {
       throw err;
     }
