@@ -27,17 +27,10 @@ const jobTitles = [
     "Senior Full Stack Developer",
     "PHP Developer",
     "Full Stack",
-    "Senior Full Stack Engineer",
-    "Senior Full Stack Developer",
     "Full Stack Engineer",
     "Full Stack Developer",
-    "Lead Full Stack Engineer",
-    "Lead Full Stack Developer",
-    "Full Stack Software Engineer",
-    "Full Stack Software Developer",
     "PHP Developer",
     "JavaScript Developer",
-    "Senior Software Engineer",
     "Web Developer"
 ];
 const browser = await chromium.connectOverCDP('http://127.0.0.1:9222');
