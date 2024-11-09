@@ -37,3 +37,11 @@ export async function handle({event, resolve}) {
 }
 ```
 
+```html
+<meta content="https://www.indeed.com/viewjob?from=appsharedroid&amp;jk=5877922a472f58f7" id="indeed-share-url">
+<meta content="Full Stack Engineer (NYC, Austin or Remote US)" id="indeed-share-message">
+<meta property="og:description" content="Trunk Tools, Inc.">
+```
+
+
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222

@@ -1,47 +1,20 @@
 <script>
-    import { onMount } from "svelte";
+    import {onMount} from "svelte";
     import Editor from "@tinymce/tinymce-svelte";
-    // import { io } from "socket.io-client";
-    // import { PUBLIC_WS_PORT } from "$env/static/public";
 
-    // let socket;
-    // let serverResponse = [];
-
-    let conf = {
+    const TINYMCE_CONFIG = {
         height: 500,
         menubar: false,
         plugins: [
-            "advlist",
-            "autolink",
-            "lists",
-            "link",
-            "image",
-            "charmap",
-            "anchor",
-            "searchreplace",
-            "visualblocks",
-            "code",
-            "fullscreen",
-            "insertdatetime",
-            "media",
-            "table",
-            "preview",
-            "help",
-            "wordcount",
+            "advlist", "autolink", "lists", "link", "image", "charmap", "anchor",
+            "searchreplace", "visualblocks", "code", "fullscreen", "insertdatetime",
+            "media", "table", "preview", "help", "wordcount"
         ],
-        toolbar:
-            "undo redo | blocks | " +
-            "bold italic forecolor | alignleft aligncenter " +
+        toolbar: "undo redo | blocks | bold italic forecolor | alignleft aligncenter " +
             "alignright alignjustify | bullist numlist outdent indent | " +
-            "removeformat | help",
+            "removeformat | help"
     };
-
-    let jobs = [];
-    let status = "New";
-    let currentJob = null;
-    let editing = false;
-    let autoSaveTimeout;
-    const statuses = [
+    const STATUSES = [
         "New",
         "Saved",
         "Applied",
@@ -49,6 +22,13 @@
         "Rejected",
         "Deleted",
     ];
+
+    let jobs = [];
+    let status = "New";
+    let currentJob = null;
+    let editing = false;
+    let autoSaveTimeout;
+
     let currentJobStatusHasChanged = false;
 
     $: {
@@ -56,12 +36,8 @@
         status = params.get("status") ?? "New";
     }
 
-    // function pullJobs() {
-    //     socket.emit("messageFromClient", "pull jobs");
-    // }
-
     async function fetchJobs() {
-        console.log("Fetching jobs...", status);
+
         try {
             let response = await fetch("/api/jobs");
             jobs = await response.json();
@@ -82,7 +58,7 @@
         currentJob.status = newStatus;
 
         jobs = jobs.map((job) =>
-            job.jk === currentJob.jk ? { ...job, status: newStatus } : job,
+            job.jk === currentJob.jk ? {...job, status: newStatus} : job,
         );
 
         try {
@@ -113,9 +89,6 @@
 
     async function autoSave() {
         if (!editing) return;
-        // Update the current job's HTML content
-        // currentJob.post_html = value;
-
         try {
             await fetch("/api/jobs", {
                 method: "PUT",
@@ -124,7 +97,7 @@
                 },
                 body: JSON.stringify(currentJob),
             });
-            console.log("Auto-saved successfully");
+
         } catch (error) {
             console.error("Error auto-saving:", error);
         }
@@ -142,14 +115,11 @@
     }
 
     function handleKeyDown(event) {
-        console.log("Key pressed:", event.key);
 
         if (event.key === "e") {
-            console.log("Editing...");
             editing = true;
         }
 
-        // console.log(`Key pressed: ${event.key}, Code: ${event.code}`);
         if (event.key === "j" || event.key === "ArrowDown") {
             event.preventDefault();
             let index = jobs.findIndex((j) => j.jk === currentJob.jk);
@@ -157,23 +127,12 @@
                 for (let i = index + 1; i < jobs.length; i++) {
                     if (jobs[i].status === status) {
                         currentJob = jobs[i];
-                        //turndown currentJob.post_html
-
-                        let turndownService = new TurndownService();
-
-                        if (currentJob && currentJob.post_html) {
-                            let markdown = turndownService.turndown(
-                                currentJob.post_html,
-                            );
-                            console.log(markdown);
-                            // let res = askAI(markdown,'Generate a markdown table of the required tech stack and if given the number of years for each')
-                            // console.log(res);
-                        }
                         break;
                     }
                 }
             }
         }
+
         if (event.key === "k" || event.key === "ArrowUp") {
             event.preventDefault();
             let index = jobs.findIndex((j) => j.jk === currentJob.jk);
@@ -190,19 +149,19 @@
         if (event.key === "l" || event.key === "ArrowLeft") {
             event.preventDefault();
             currentJobStatusHasChanged = true;
-            let currentIndex = statuses.indexOf(currentJob.status);
+            let currentIndex = STATUSES.indexOf(currentJob.status);
             let nextIndex = currentIndex + 1;
-            if (nextIndex >= statuses.length) nextIndex = 0;
-            currentJob.status = statuses[nextIndex];
+            if (nextIndex >= STATUSES.length) nextIndex = 0;
+            currentJob.status = STATUSES[nextIndex];
         }
 
         if (event.key === "h" || event.key === "ArrowRight") {
             event.preventDefault();
             currentJobStatusHasChanged = true;
-            let currentIndex = statuses.indexOf(currentJob.status);
+            let currentIndex = STATUSES.indexOf(currentJob.status);
             let nextIndex = currentIndex - 1;
-            if (nextIndex < 0) nextIndex = statuses.length - 1;
-            currentJob.status = statuses[nextIndex];
+            if (nextIndex < 0) nextIndex = STATUSES.length - 1;
+            currentJob.status = STATUSES[nextIndex];
         }
 
         if (event.key === "n") {
@@ -221,10 +180,10 @@
 
         if (event.key === "Tab") {
             event.preventDefault(); // Prevent default tab behavior
-            let currentIndex = statuses.indexOf(status);
+            let currentIndex = STATUSES.indexOf(status);
             if (currentIndex === -1) currentIndex = 0;
-            let nextIndex = (currentIndex + 1) % statuses.length; // Move to the next index, wrap around to 0 if at end
-            updateStatus(statuses[nextIndex]);
+            let nextIndex = (currentIndex + 1) % STATUSES.length; // Move to the next index, wrap around to 0 if at end
+            updateStatus(STATUSES[nextIndex]);
         }
 
         if (event.key === "Enter") {
@@ -250,27 +209,16 @@
         startAutoSaveTimer;
         document.addEventListener("keydown", handleKeyDown);
 
-        // socket = io(`http://localhost:${PUBLIC_WS_PORT}`, {
-        //     withCredentials: true,
-        // });
-
-        // // Listen for the 'messageFromServer' event and update the UI
-        // socket.on("messageFromServer", (data) => {
-        //     console.log("messageFromServer", data);
-        //     serverResponse = [...serverResponse, data];
-        // });
-
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
     });
 
-    function escapeRegExp(string) {
-        // return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        return string.replace(/[.*+?^${}()|[\]#\\]/g, "\\$&");
-    }
-
     function highlightWords(text) {
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]#\\]/g, "\\$&");
+        }
+
         if (!text) return "";
         const wordsToHighlightGreen = [
             "HTML",
@@ -292,9 +240,21 @@
             "Django",
             "Laravel",
             "jQuery",
+            "SCSS",
+            "Jest",
+            "Cypress",
+            "MySQL",
+            "Javascript",
+            "CI/CD",
+            "Jira",
+            "DynamoDB",
+            "Linux",
+            "Vuex"
         ].map(escapeRegExp);
 
         const wordsToHighlightRed = [
+            "MS SQL",
+            "Ruby on Rails",
             "Ruby",
             "Azure",
             ".Net",
@@ -307,17 +267,29 @@
             "Flutter",
             "Spring",
             "MSSQL",
+            "Next.js",
+            "ASP.NET",
+            "VB.Net",
+            "VB",
+            "Go",
+            "Visual Basic"
         ].map(escapeRegExp);
 
+        // const regex = new RegExp(
+        //         `(?<!\\w)(${wordsToHighlightGreen.join("|")})(?!\\w)|(?<!\\w)(${wordsToHighlightRed.join("|")})(?!\\w)`,
+        //     "g"
+        // );
         const regex = new RegExp(
-            `\\b(${wordsToHighlightGreen.join("|")})\\b|\\b(${wordsToHighlightRed.join("|")})\\b`,
-            "g",
+                `(?<!\\w)(${wordsToHighlightGreen.join("|")})(?!\\w)|(?<!\\w)(${wordsToHighlightRed.join("|")})(?!\\w)`,
+            "gi"  // Added the 'i' flag for case-insensitive matching along with the 'g' flag for global search
         );
 
         return text.replace(regex, (match, p1, p2) => {
+
             if (p1) {
                 return `<span class="highlight-green">${match}</span>`;
             } else if (p2) {
+
                 return `<span class="highlight-red">${match}</span>`;
             }
             return match;
@@ -325,33 +297,21 @@
     }
 
     $: highlightedHtml = highlightWords(currentJob?.post_html);
+    $: highlightedTechStack = highlightWords(currentJob?.tech_stack);
 </script>
 
 <div class="container-fluid">
-    <!--        <div class="row border-bottom">-->
-    <!--            {#each statuses as statusGroup}-->
-    <!--                <div class="col-2 status-nav {statusGroup} {statusGroup === status ? 'active-group' : ''}"-->
-    <!--                     on:click={() => updateStatus(statusGroup)}>-->
-    <!--                    {statusGroup} ({jobs.filter(job => job.status === statusGroup).length})-->
-    <!--                </div>-->
-    <!--            {/each}-->
-    <!--        </div>-->
     <div class="row">
         <div class="col-3 jobs-left-col">
-            <!-- <ul>
-                {#each serverResponse as item}
-                    <li>{item}</li>
-                {/each}
-            </ul> -->
             {#each jobs.filter((job) => job.status === status) as job}
                 <div
-                    role="button"
-                    tabindex="0"
-                    class="job-title {job.jk === currentJob?.jk
+                        role="button"
+                        tabindex="0"
+                        class="job-title {job.jk === currentJob?.jk
                         ? 'active'
                         : 'inactive'}"
-                    on:click={() => (currentJob = job)}
-                    on:keydown={(event) => {
+                        on:click={() => (currentJob = job)}
+                        on:keydown={(event) => {
                         if (event.key === "Enter" || event.key === " ") {
                             currentJob = job;
                         }
@@ -361,7 +321,6 @@
                     {job.title}
                 </div>
             {/each}
-            <!--            <button on:click={pullJobs}>Pull jobs</button>-->
             {#if jobs.filter((job) => job.status === status).length === 0}
                 <p class="empty">
                     No {status.toLowerCase()} job listings found.
@@ -370,24 +329,24 @@
         </div>
         <div class="col-9 jobs-right-col">
             <div class="row border-bottom">
-                {#each statuses as statusGroup}
+                {#each STATUSES as statusGroup}
                     <div
-                        role="button"
-                        tabindex="0"
-                        class="col-2 status-nav {statusGroup} {statusGroup ===
+                            role="button"
+                            tabindex="0"
+                            class="col-2 status-nav {statusGroup} {statusGroup ===
                         status
                             ? 'active-group'
                             : ''}"
-                        on:click={() => updateStatus(statusGroup)}
-                        on:keydown={(event) => {
+                            on:click={() => updateStatus(statusGroup)}
+                            on:keydown={(event) => {
                             if (event.key === "Enter" || event.key === " ") {
                                 updateStatus(statusGroup);
                             }
                         }}
                     >
                         {statusGroup} ({jobs.filter(
-                            (job) => job.status === statusGroup,
-                        ).length})
+                        (job) => job.status === statusGroup,
+                    ).length})
                     </div>
                 {/each}
             </div>
@@ -407,52 +366,70 @@
                             <strong>
                                 {currentJob.company}
                                 <a
-                                    href={currentJob.company_link}
-                                    target="_blank"
+                                        href={currentJob.company_link}
+                                        target="_blank"
                                 >
                                     <i class="bi bi-arrow-up-right-square"></i>
                                 </a>
                             </strong>
                         </td>
+                        <td style="width: 10px;">&nbsp;</td>
+                        <td>ID:</td>
+                        <th>{currentJob.jk}</th>
                     </tr>
                     <tr>
                         <td>Salary:</td>
                         <td><strong>{currentJob.salary}</strong></td>
+                        <td>&nbsp;</td>
+                        <td>Query:</td>
+                        <th>{currentJob.search_query}</th>
                     </tr>
                     <tr>
                         <td>Status:</td>
                         <td>
                             <select
-                                bind:value={currentJob.status}
-                                class:status-not-saved={currentJobStatusHasChanged}
+                                    bind:value={currentJob.status}
+                                    class:status-not-saved={currentJobStatusHasChanged}
                             >
                                 on:change={handleStatusChange}>
-                                {#each statuses as status}
+                                {#each STATUSES as status}
                                     <option value={status}>{status}</option>
                                 {/each}
                             </select>
                             {#if currentJobStatusHasChanged}
                                 <span
-                                    class:status-not-saved-label={currentJobStatusHasChanged}
+                                        class:status-not-saved-label={currentJobStatusHasChanged}
                                 >
                                     (Press Enter to save, Escape to cancel)
                                 </span>
                             {/if}
                         </td>
+                        <td>&nbsp;</td>
+                        <td>Date:</td>
+                        <th>{currentJob.new_date}</th>
                     </tr>
                 </table>
-                <hr />
+                {#if currentJob.tech_stack}
+                    <hr/>
+                    <div style="display: flex; align-items: center;">
+                        <span style="font-weight: bold; margin-right: 10px;">Tech Stack:</span>
+                        <span style="margin-right: 10px;">
+                            {@html highlightedTechStack}
+                        </span>
+                        <span class="badge bg-primary">{currentJob.match_percentage}% Match</span>
+                    </div>
+                {/if}
+                <hr/>
                 {#if editing}
                     <button class="save-button" on:click={save}>Save</button>
                     <Editor
-                        licenseKey="gpl"
-                        scriptSrc="tinymce/tinymce.min.js"
-                        height="100%"
-                        bind:value={currentJob.post_html}
-                        {conf}
+                            licenseKey="gpl"
+                            scriptSrc="tinymce/tinymce.min.js"
+                            height="100%"
+                            bind:value={currentJob.post_html}
+                            {...TINYMCE_CONFIG}
                     />
                 {:else}
-                    <!--{@html currentJob.post_html}-->
                     {@html highlightedHtml}
                 {/if}
             {/if}
@@ -473,9 +450,5 @@
 
     .save-button:hover {
         background-color: #0056b3;
-    }
-
-    .highlight {
-        background-color: yellow;
     }
 </style>

@@ -172,35 +172,35 @@ h5 {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow */
 }
 
+.status-nav {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(1, 0, 0, 0.1);
+}
+
 /* Background colors for each status */
 .New {
-    background-color: #e7f3fe; /* Light blue */
+    /*background-color: #e7f3fe; !* Light blue *!*/
     border-left: #0d120a 1px solid;
     border-right: #0d120a 1px solid;
 }
 
 .Saved {
-    background-color: #fef3e7; /* Light orange */
     border-right: #0d120a 1px solid;
 }
 
 .Applied {
-    background-color: #e7fef3; /* Light green */
     border-right: #0d120a 1px solid;
 }
 
 .Interview {
-    background-color: #f3e7fe; /* Light purple */
     border-right: #0d120a 1px solid;
 }
 
 .Rejected {
-    background-color: #fee7e7; /* Light red */
     border-right: #0d120a 1px solid;
 }
 
 .Deleted {
-    background-color: #f0f0f0; /* Light grey */
     border-right: #0d120a 1px solid;
 }
 
