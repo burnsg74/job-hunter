@@ -25,13 +25,8 @@ const excitingJkList = await new Promise((resolve, reject) => {
 const jobTitles = [
     "Senior Full Stack Engineer",
     "Senior Full Stack Developer",
-    "PHP Developer",
-    "Full Stack",
     "Full Stack Engineer",
     "Full Stack Developer",
-    "PHP Developer",
-    "JavaScript Developer",
-    "Web Developer"
 ];
 const browser = await chromium.connectOverCDP('http://127.0.0.1:9222');
 const page = browser.contexts()[0].pages()[0];
@@ -48,9 +43,13 @@ for (const jobTitle of jobTitles) {
         console.log(">>>> ", jobTitle, " <<<<");
 
         const encodedJobTitle = jobTitle.replace(/ /g, "+");
-        const url = `https://www.indeed.com/jobs?q=${encodedJobTitle}&l=Remote&fromage=3`;
+        // fromage=1: 24 hours, fromage=3: 3 days
+        const fromage = 1;
+        const url = `https://www.indeed.com/jobs?q=${encodedJobTitle}&l=Remote&fromage=${fromage}`;
         console.log("URL:", url);
-
+        await new Promise((resolve) =>
+            setTimeout(resolve, Math.floor(Math.random() * 1000 + 1000)),
+        );
         await page.goto(url);
         await new Promise((resolve) =>
             setTimeout(resolve, Math.floor(Math.random() * 4000 + 1000)),
